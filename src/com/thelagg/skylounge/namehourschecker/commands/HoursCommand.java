@@ -1,6 +1,7 @@
 package com.thelagg.skylounge.namehourschecker.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +16,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.json.simple.parser.ParseException;
 
+import com.thelagg.skylounge.namehourschecker.Main;
 import com.thelagg.skylounge.namehourschecker.listeners.PlayerListener;
 import com.thelagg.skylounge.namehourschecker.util.Util;
 import net.md_5.bungee.api.ChatColor;
@@ -30,7 +33,7 @@ public class HoursCommand implements CommandExecutor {
 	
 	public HoursCommand() {
 		allPlayers = new ArrayList<Object[]>();
-		updateLeaderboard();
+		//updateLeaderboard();
 	}
 	
 	@Override
@@ -43,14 +46,29 @@ public class HoursCommand implements CommandExecutor {
 		}
 		if(args[0].equals("top")) {
 			sender.sendMessage(ChatColor.GOLD + "Leaderboards:");
-			showTop(sender);
+			//showTop(sender);
 			return true;
 		}
 		
-		long time = PlayerListener.getTimeOnline(args[0]);
-		String total = getTimeString(time);
-		sender.sendMessage(ChatColor.DARK_AQUA + args[0] + ": " + ChatColor.GRAY + total);
-		return true;
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			if(p.getName().equalsIgnoreCase(args[0])) {
+				String time = Util.getTime(p.getStatistic(Statistic.PLAY_ONE_TICK)/20);
+				sender.sendMessage(ChatColor.YELLOW + p.getName() + ChatColor.GRAY + " has played for " + ChatColor.YELLOW + time);
+				return true;
+			}
+		}
+		
+		UUID uuid;
+		try {
+			uuid = Main.nameGrabber.getUUID(args[0]);
+			String total = Util.getTime((int)PlayerListener.getTimeOnline(uuid));
+			sender.sendMessage(ChatColor.YELLOW + args[0] + ChatColor.GRAY + " has played for " + ChatColor.YELLOW + total);
+			return true;
+		} catch (IOException | InterruptedException | ParseException e) {
+			e.printStackTrace();
+			sender.sendMessage(ChatColor.GRAY + "Could not find a player by that name");
+		}
+		return false;
 	}
 	
 	public static String getTimeString(long time) {
@@ -70,7 +88,7 @@ public class HoursCommand implements CommandExecutor {
 		sender.sendMessage(ChatColor.DARK_BLUE + "/hours top");
 		sender.sendMessage(ChatColor.DARK_BLUE + "/hours <playername>");
 	}
-	
+	/*
 	public static void updateLeaderboard() { 
 		allPlayers = new ArrayList<Object[]>();
 		File playercache = new File("./playercache");
@@ -128,5 +146,5 @@ public class HoursCommand implements CommandExecutor {
 	public static void addToLeaderboards(UUID uuid, long time) {
 		allPlayers.add(new Object[] {uuid,time});
 		if(time!=0) updateLeaderboard(uuid);
-	}
+	}*/
 }

@@ -1,7 +1,7 @@
 package com.thelagg.skylounge.namehourschecker.util;
 
 public class Util {
-    public static String getTime(final int seconds) {
+    public static String getTime(int seconds) {
         if (seconds < 60) {
             return seconds + "s";
         }
