@@ -62,6 +62,17 @@ public class NameGrabber {
 		return list;
 	}
 	
+	public String getCurrentName(UUID uuid) {
+		List<Object[]> names;
+		try {
+			names = getNames(uuid);
+		} catch (InterruptedException | IOException | ParseException e) {
+			e.printStackTrace();
+			return "";
+		}
+		return (String)names.get(names.size()-1)[0];
+	}
+	
 	public UUID getUUID(String name) throws IOException, InterruptedException, ParseException {
 		waitForApi();
 		String content = URLConnectionReader.getContent("https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + Long.toString(System.currentTimeMillis()/1000));
