@@ -70,7 +70,7 @@ public class NameGrabber {
 			e.printStackTrace();
 			return "";
 		}
-		return (String)names.get(names.size()-1)[0];
+		return (String)names.get(0)[0];
 	}
 	
 	public UUID getUUID(String name) throws IOException, InterruptedException, ParseException {

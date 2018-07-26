@@ -36,7 +36,6 @@ public class HoursCommand implements CommandExecutor {
 			return true;
 		}
 		if(args[0].equals("top")) {
-			sender.sendMessage(ChatColor.GOLD + "Leaderboards:");
 			printLeaderboard((Player)sender);
 			return true;
 		}
@@ -65,7 +64,7 @@ public class HoursCommand implements CommandExecutor {
 		List<Object[]> allPlayers = new ArrayList<Object[]>();
 		List<UUID> onlineUUIDs = new ArrayList<UUID>();
 		for(Player p : Bukkit.getOnlinePlayers()) {
-			allPlayers.add(new Object[] {p.getUniqueId(),p.getStatistic(Statistic.PLAY_ONE_TICK)/20});
+			allPlayers.add(new Object[] {p.getUniqueId(),(long)(p.getStatistic(Statistic.PLAY_ONE_TICK)/20)});
 			onlineUUIDs.add(p.getUniqueId());
 		}
 		File timecache = new File("./timecache");
@@ -88,11 +87,12 @@ public class HoursCommand implements CommandExecutor {
 				e.printStackTrace();
 			}
 		}
-		allPlayers.sort((Object[] a, Object[] b) -> Long.compare((Long)b[1], (Long)a[1]));
+
+		allPlayers.sort((Object[] a, Object[] b) -> Long.compare((long)b[1], (long)a[1]));
 		for(int i = 0; i<5 && i<allPlayers.size(); i++) {
 			Object[] arr = allPlayers.get(i);
 			String name = Main.nameGrabber.getCurrentName((UUID)arr[0]);
-			String time = Util.getTime((int)arr[1]);
+			String time = Util.getTime((long)arr[1]);
 			sender.sendMessage(ChatColor.GRAY + "" + (i+1) + ". " + name + " - " + ChatColor.YELLOW + time);
 		}
 		int position = 0;
